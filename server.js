@@ -1,20 +1,19 @@
 // Dependencies
+// =============================================================
 var express = require("express");
+var path = require("path"); /// contruct relative path
 
+// Sets up the Express App
+// =============================================================
 var app = express();
 var PORT = 3000;
 
-/// client REQUEST
-
-/// middleware - sits between client request and server receiving request
-
-/// receives REQUEST
-
-// Sets up the Express app to handle data parsing --- middleware telling how to handle a different client request
+// Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Data
+// Star Wars Characters (DATA)
+// =============================================================
 var characters = [
   {
     routeName: "yoda",
@@ -40,8 +39,12 @@ var characters = [
 ];
 
 // Routes
+// =============================================================
+
+// Basic route that sends the user first to the AJAX Page
 app.get("/", function(req, res) {
-  res.send("Welcome to the Star Wars Page!");
+  // res.send("Welcome to the Star Wars Page!")
+  res.sendFile(path.join(__dirname, "view.html"));
 });
 
 // Displays all characters
@@ -49,7 +52,7 @@ app.get("/api/characters", function(req, res) {
   return res.json(characters);
 });
 
-// Displays a single character, or shows "No character found"
+// Displays a single character, or returns false
 app.get("/api/characters/:character", function(req, res) {
   var chosen = req.params.character;
 
@@ -61,21 +64,26 @@ app.get("/api/characters/:character", function(req, res) {
     }
   }
 
-  return res.send("No character found");
-
+  return res.json(false);
 });
 
 // Create New Characters - takes in JSON input
 app.post("/api/characters", function(req, res) {
-  var newCharacter = req.body;
+  // req.body hosts is equal to the JSON post sent from the user
+  // This works because of our body parsing middleware
+  var newcharacter = req.body;
 
-  console.log(newCharacter);
+  console.log(newcharacter);
 
-  characters.push(newCharacter);
+  // We then add the json the user sent to the character array
+  characters.push(newcharacter);
 
-  res.json(newCharacter);
+  // We then display the JSON to the users
+  res.json(newcharacter);
 });
 
+// Starts the server to begin listening
+// =============================================================
 app.listen(PORT, function() {
   console.log("App listening on PORT " + PORT);
 });
